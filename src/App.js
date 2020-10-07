@@ -1,12 +1,13 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import MainPage from './Components/MainPage'
-
+import Header from './Components/Header'
+import WelcomeText from './Components/WelcomeText'
 function App() {
   return (
     <div className="App">
-      <MainPage />
+      <Header />
+      <br></br>
+      <WelcomeText/>
     </div>
   );
 }

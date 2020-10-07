@@ -1,0 +1,15 @@
+.img{
+    image-rendering: optimizeQuality;
+    position: relative;
+    height: fit-content;
+
+}
+.h1{
+    display: inline-block;
+    color: coral;
+    font-size: 45px;
+    position: relative;
+}
+.header{
+    padding-top: 2%;
+}
