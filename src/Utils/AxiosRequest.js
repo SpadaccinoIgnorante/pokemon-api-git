@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export default class AxiosRequest {
 
-    static Get(url,onResponse,onError) {
+    static get(url,onResponse,onError) {
         axios.get(url)
         .then(res => 
         {

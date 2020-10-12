@@ -1,0 +1,54 @@
+ol.team{
+    list-style: none;
+    position: relative;
+    background-color: khaki;
+    border-radius: 5px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+li.team{
+    display: inline-block;
+    position: relative;
+    background-color: yellowgreen;
+    margin-top: 1%;
+    margin-left: 0.5%;
+    margin-right: 0.5%;
+    margin-bottom: 2.5%;
+    border-radius: 10px;
+}
+
+ol.pokedex{
+    list-style: none;
+    position: relative;
+    background-color: gray;
+    border-radius: 5px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+li.pokedex{
+    display: inline-block;
+    position: relative;
+    background-color: green;
+    margin-top: 1%;
+    margin-left: 0.5%;
+    margin-right: 0.5%;
+    margin-bottom: 2.5%;
+    border-radius: 10px;
+}
+
+img.pokemon{
+    position: inherit;
+    background-color: yellow;
+    align-content: center;
+    border-radius: 50px;
+    margin-top: 10%;
+}
+
+p.pokemonText{
+    position: relative;
+    text-align: center;
+    padding-top: 0.1%;
+    background-color: lightcoral;
+}
