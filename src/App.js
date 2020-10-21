@@ -4,6 +4,8 @@ import Header from './Components/Header'
 import PokeListContainer from './Components/PokeListContainer';
 import TeamListContainer from './Components/TeamListContainer';
 import WelcomeText from './Components/WelcomeText'
+import {PokemonContextProvider} from './Contexts/PokemonContext'
+
 function App() {
   return (
     <div className="App">
@@ -11,9 +13,11 @@ function App() {
       <br></br>
       <WelcomeText/>
       <br></br>
+      <PokemonContextProvider>
       <TeamListContainer />
       <br></br>
       <PokeListContainer />
+      </PokemonContextProvider>
     </div>
   );
 }

@@ -3,29 +3,50 @@ import PokeResponse from '../Models/PokeResponse'
 import AxiosRequest from '../Utils/AxiosRequest'
 import PokemonBadge from './PokemonBadge';
 import '../Css/PokeList.css' 
+import MPokemon from '../Models/MPokemon';
+import ContainerText from './ContainerText';
 
 function PokeListContainer() {
     
-    const pResponse = new PokeResponse()
-    const [response, setResponse] = useState(pResponse)
-    
-    // Mount
+    const [response, setResponse] = useState(new PokeResponse());
+    const [pokemonBadges, setBadges] = useState([]);
+
+    // Triggered after response is changed and fill pokemonBadges
     useEffect(() => 
     {
-        AxiosRequest.get("https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0", (axiosResponse) => 
+        const list = response.results.map(response => <PokemonBadge key={response.name} pokemonModel={new MPokemon(response.name,
+                                                                                                    response.sprites.front_shiny,
+                                                                                                    response.sprites.front_default,
+                                                                                                    response.sprites.other["official-artwork"].front_default)}/>);
+
+        setBadges(list);
+
+    },[response]);
+
+    // onMount and perform all promises
+    useEffect(() => 
+    {
+        AxiosRequest.get("https://pokeapi.co/api/v2/pokemon?limit=500&offset=0", (axiosResponse) => 
         {   
-            setResponse(new PokeResponse(axiosResponse.results));
+            const promises = axiosResponse.results.map(r => AxiosRequest.getPromise(r.url));
+            
+            AxiosRequest.getAll(promises, (responseArray) => 
+            {
+                setResponse(new PokeResponse(responseArray.map(response => response.data)));
+            },alert);
+        
         },alert)
     }, [])
 
-    if(!response || response.results.length === 0)
-        return React.Fragment;
+    // If all promises are not done, print the Loading content...
+    if(pokemonBadges.length == 0)
+        return <h2>Loading content...</h2>;
 
-    const list = response.results.map(p => <PokemonBadge key={p.name} url={p.url}/>);
-
+    // Render all badges
     return (
         <ol className='pokedex'>
-            {list}
+            <ContainerText text="Pokedex"/>
+            {pokemonBadges}
         </ol>
     )
 }

@@ -1,71 +1,39 @@
-import AxiosRequest from "../Utils/AxiosRequest";
-import React, {useState, useEffect} from 'react'
-import DefaultImage from '../Assets/Images/Pokéball_64.png'
+import React, {useState, useContext} from 'react'
+import {PokemonContext} from "../Contexts/PokemonContext";
+import PokemonText from '../Components/PokemonText'
+import PokemonImage from '../Components/PokemonImage'
 import '../Css/PokeList.css'
-
-export const PokemonContext = React.createContext(); 
+import MPokemon from '../Models/MPokemon';
 
 function PokemonBadge(props) {
 
-    const {url, pokemonCopy} = props;
+    const {pokemonModel} = props;
 
-    if(pokemonCopy != null || pokemonCopy != undefined)
-        console.log(pokemonCopy.name);
+    const [pokemonContext,setPokemonContext] = useContext(PokemonContext);
 
-    // Pokemon model
-    const mpokemon = 
-    {
-        name : "",
-        shinySprite : "shinyUrl",
-        normalSprite : "normalUrl",
-        artworkSprite : "artworkUrl",
-        isInTeam : false
-    }
-
-    const [pokemon, setPokemon] = useState(mpokemon)
-
-    useEffect(() => 
-    {
-        if(pokemonCopy != null && pokemonCopy != undefined)
-            return;
-        AxiosRequest.get(url, (axiosResponse) => 
-        {
-            mpokemon.name = axiosResponse.name;
-            mpokemon.shinySprite = axiosResponse.sprites.front_shiny;
-            mpokemon.normalSprite = axiosResponse.sprites.front_default;
-            mpokemon.artworkSprite = axiosResponse.sprites.other["official-artwork"].front_default;
-           
-            setPokemon(Object.create(mpokemon));
-        }, (err) => 
-        {
-            alert(err);
-        });
-    },[])
+    const [mPokemon, setPokemon] = useState(pokemonModel);
 
     function setAsTeamBadge() {
 
-        if(pokemon === undefined)return;
+        const newPokemon = new MPokemon(mPokemon.name,
+                                        mPokemon.shinySprite,
+                                        mPokemon.normalSprite,
+                                        mPokemon.artworkSprite,
+                                        !mPokemon.isInTeam);
 
-        pokemon.isInTeam = !pokemon.isInTeam;
+        setPokemonContext(newPokemon);
 
-        setPokemon(Object.create(pokemon))
+        setPokemon(newPokemon);
     }
 
-    let image;
-
-    if(pokemon.isInTeam || pokemon.normalSprite != null)
-        image = pokemon.normalSprite;
-    else
-        image = DefaultImage;
+    const styleClass = mPokemon.isInTeam ? 'team' : 'pokedex'
 
     return (
-        <PokemonContext.Provider value={pokemon}>
-        <li className='pokedex' onClick={setAsTeamBadge}>
-            <img className='pokemon' src={image}></img>
-            <p className='pokemonText'>{pokemon.name}</p>
+        <li className={styleClass} onClick={setAsTeamBadge}>
+            <PokemonImage imgUrl={mPokemon.normalSprite}/>
+            <PokemonText text={mPokemon.name}/>
         </li>
-        </PokemonContext.Provider>
-    )
+        )
 
 }
 

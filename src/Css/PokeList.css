@@ -1,7 +1,7 @@
 ol.team{
     list-style: none;
     position: relative;
-    background-color: khaki;
+    background-color: #FED700;
     border-radius: 5px;
     margin-left: 10%;
     margin-right: 10%;
@@ -21,7 +21,7 @@ li.team{
 ol.pokedex{
     list-style: none;
     position: relative;
-    background-color: gray;
+    background-color: #FED700;
     border-radius: 5px;
     margin-left: 10%;
     margin-right: 10%;
@@ -31,7 +31,7 @@ li.pokedex{
     display: inline-block;
     position: relative;
     background-color: green;
-    margin-top: 1%;
+    margin-top: 2em;
     margin-left: 0.5%;
     margin-right: 0.5%;
     margin-bottom: 2.5%;
