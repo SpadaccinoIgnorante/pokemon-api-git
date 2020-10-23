@@ -11,10 +11,9 @@ function TeamListContainer() {
     const [team, setTeam] = useState([])
     const [teamToDisplay, setTeamToDisplay] = useState([]);
     
-
     useEffect(() => 
     {
-        setTeamToDisplay(team.map(pokemonModel => <PokemonBadge key={pokemonModel.name} pokemonModel={pokemonModel}/>))
+        setTeamToDisplay(team.map(pokemonModel => <PokemonBadge key={pokemonModel.name} pokemonModel={pokemonModel} isOriginal={false}/>))
     },[team]);
     
     // Perform when a pokemon is added
