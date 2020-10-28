@@ -2,20 +2,15 @@ import React,{useEffect,useState,useContext} from 'react'
 import '../Css/PokeList.css' 
 import PokemonBadge from './PokemonBadge'
 import {PokemonContext} from '../Contexts/PokemonContext'
-import MPokemon from '../Models/MPokemon';
-import ContainerText from '../Components/ContainerText'
+import {FunctionContext} from '../Contexts/FunctionPokemonContext'
+import ContainerText from '../Components/ContainerText' 
 
 function TeamListContainer() {
     
     const [pokemonAdded,setPokemonAdded] = useContext(PokemonContext);
     const [team, setTeam] = useState([])
-    const [teamToDisplay, setTeamToDisplay] = useState([]);
-    
-    useEffect(() => 
-    {
-        setTeamToDisplay(team.map(pokemonModel => <PokemonBadge key={pokemonModel.name} pokemonModel={pokemonModel} isOriginal={false}/>))
-    },[team]);
-    
+    const [functionContext,setFunctionContext] = useContext(FunctionContext);
+
     // Perform when a pokemon is added
     useEffect(() => 
     {
@@ -37,14 +32,22 @@ function TeamListContainer() {
             team.splice(pkmnIndex,1);
         }
        
+        // Set active all pokemon in team
+        team.forEach(m => m.isActive = true);
+
         setTeam(team.map(pokemon => pokemon));
 
     },[pokemonAdded]);
 
+    if(functionContext == undefined)
+        return React.Fragment;
+
     return (
         <ol className='team'>
             <ContainerText text="Team"/>
-            {teamToDisplay.length == 0 ? "Add a pokemon clicking on the badge" : teamToDisplay}
+            {team.length == 0 ? "Add a pokemon clicking on the badge" : team.map(pokemonModel => <PokemonBadge key={pokemonModel.name} 
+                                                                                                                    pokemonModel={pokemonModel} 
+                                                                                                                    onClickBadge={functionContext}/>)}
         </ol>
     )
 }

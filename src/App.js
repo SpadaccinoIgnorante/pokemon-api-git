@@ -5,6 +5,7 @@ import PokeListContainer from './Components/PokeListContainer';
 import TeamListContainer from './Components/TeamListContainer';
 import WelcomeText from './Components/WelcomeText'
 import {PokemonContextProvider} from './Contexts/PokemonContext'
+import {FunctionContextProvider} from './Contexts/FunctionPokemonContext'
 
 function App() {
   return (
@@ -13,11 +14,13 @@ function App() {
       <br></br>
       <WelcomeText/>
       <br></br>
+      <FunctionContextProvider>
       <PokemonContextProvider>
       <TeamListContainer />
       <br></br>
       <PokeListContainer />
       </PokemonContextProvider>
+      </FunctionContextProvider>
     </div>
   );
 }

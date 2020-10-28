@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import PokeResponse from '../Models/PokeResponse'
 import AxiosRequest from '../Utils/AxiosRequest'
 import PokemonBadge from './PokemonBadge';
@@ -6,90 +6,14 @@ import '../Css/PokeList.css'
 import MPokemon from '../Models/MPokemon';
 import ContainerText from './ContainerText';
 import SearchTab from './SearchTab'
+import {PokemonContext} from '../Contexts/PokemonContext'
+import {FunctionContext} from '../Contexts/FunctionPokemonContext'
 
 function PokeListContainer() {
     
-    const [response, setResponse] = useState(new PokeResponse());
-    const [pokemonBadges, setBadges] = useState(new Array());
     const [modelList,setModels] = useState(new Array());
-
-    const searchByName = (name) => {
-        
-        if(name == null || name.length <= 0)
-        {
-            setBadges(modelList.map(model => <PokemonBadge key={model.name} 
-                                                                pokemonModel={model}
-                                                                isOriginal={true}
-                                                                onModelChanged={updateModel.bind(pokemonBadges,modelList)}/>));
-            return;    
-        }
-
-        const modelsFound = modelList.filter(m => 
-        {
-            if(m.name.includes(name) == true)
-                return m.name;
-        });
-
-        if(modelsFound.length == 0) {
-            alert("No pokemon found");
-            return;
-        }
-
-        setBadges(modelsFound.map(model => <PokemonBadge key={model.name} 
-                                                            pokemonModel={model}
-                                                            isOriginal={true}
-                                                            onModelChanged={updateModel.bind(pokemonBadges,modelList)}/>));
-    }
-
-    const updateModel = (pokemonModel) => {
-
-        if(modelList.length == 0) {
-            alert("no models ");
-            return;
-        }
-
-        const index = modelList.findIndex(m => m.name == pokemonModel.name);
-
-        if(index == -1 || index == undefined)
-            return;
-
-        modelList[index] = pokemonModel;
-
-        const bIndex = pokemonBadges.findIndex(b => b.key == pokemonModel.name);
-
-        if(bIndex == -1)
-            return;
-
-        pokemonBadges[bIndex] = <PokemonBadge key={pokemonModel.name} 
-                                                pokemonModel={pokemonModel} 
-                                                isOriginal={true} 
-                                                onModelChanged={updateModel.bind(pokemonBadges,modelList)}/>;
-        setModels(modelList);
-        setBadges(pokemonBadges);
-    }
-
-    // Triggered after response is changed and fill pokemonBadges
-    useEffect(() => 
-    {
-        const newModelList = response.results.map(response =>  new MPokemon(response.name,
-                                                                            response.sprites.front_shiny,
-                                                                            response.sprites.front_default,
-                                                                            response.sprites.other["official-artwork"].front_default,
-                                                                            false,
-                                                                            null));
-
-        if(newModelList.length == 0)
-            return;
-
-        const badgeList = newModelList.map(pModel => <PokemonBadge key={pModel.name} 
-                                                                        pokemonModel={pModel} 
-                                                                        isOriginal={true}
-                                                                        onModelChanged={updateModel.bind(pokemonBadges,modelList)}/>);
-                                                                        
-        setModels(newModelList);
-        setBadges(badgeList);
-
-    },[response]);
+    const [modelChanged,setPokemonChanged] = useContext(PokemonContext);
+    const [functionContext,setFunctionContext] = useContext(FunctionContext);
 
     // onMount and perform all promises
     useEffect(() => 
@@ -100,26 +24,85 @@ function PokeListContainer() {
             
             AxiosRequest.getAll(promises, (responseArray) => 
             {
-                setResponse(new PokeResponse(responseArray.map(response => response.data)));
+               requestDone(new PokeResponse(responseArray.map(response => response.data)));
             },alert);
         
         },alert)
-    }, [])
+    }, []);
+
+    const searchByName = (name) => {
+        
+        if(name == null || name.length <= 0)
+        {
+            modelList.forEach(m => m.isActive = true);
+            setModels(modelList.map(m => m));
+            return;    
+        }
+
+        modelList.forEach(m => 
+        {
+            if(m.name.includes(name) == false)
+                m.isActive = false;
+            else
+                m.isActive = true;
+        });
+
+        setModels(modelList.map(m => m));
+    }
+
+    const updateModel = (pokemonModel) => {
+
+        if(modelList.length == 0) {
+            return;
+        }
+
+        const index = modelList.findIndex(m => m.name == pokemonModel.name);
+
+        if(index == -1 || index == undefined)
+            return;
+
+        modelList[index] = new MPokemon(pokemonModel.name,
+                                        pokemonModel.shinySprite,
+                                        pokemonModel.normalSprite,
+                                        pokemonModel.artworkSprite,
+                                        !pokemonModel.isInTeam);
+
+        console.log(modelList[index]);
+
+        setModels(modelList.map(m=>m));
+        setFunctionContext(() => updateModel);
+        setPokemonChanged(modelList[index]);
+        
+    }
+
+    const requestDone = (response) => {
+
+        const newModelList = response.results.map(response =>  new MPokemon(response.name,
+                                                                            response.sprites.front_shiny,
+                                                                            response.sprites.front_default,
+                                                                            response.sprites.other["official-artwork"].front_default,
+                                                                            false));
+
+        if(newModelList.length == 0)
+            return;
+
+        setModels(newModelList);
+    }
 
     // If all promises are not done, print the Loading content...
-    if(pokemonBadges.length == 0)
+    if(modelList.length == 0)
         return <h2>Loading content...</h2>;
     
     // Render all badges
     return (
         <ol className='pokedex'>
-            <SearchTab onValueChanged={searchByName.bind(pokemonBadges,modelList)}/>
+            <SearchTab onValueChanged={searchByName}/>
             <ContainerText text="Pokedex"/>
-            {pokemonBadges}
+            {modelList.map(pModel => <PokemonBadge key={pModel.name} 
+                                                        pokemonModel={pModel}
+                                                        onClickBadge={updateModel}/>)}
         </ol>
     )
 }
-
-
 
 export default PokeListContainer
